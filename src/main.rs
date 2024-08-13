@@ -14,16 +14,14 @@ fn is_port_occupied(port: u16) -> bool {
         ))
         .output()
         .expect("Failed to execute PowerShell command");
-
     let output_str = String::from_utf8_lossy(&output.stdout);
-
     // 检查输出中是否包含 "LISTENING" 字样
     output_str.contains("LISTENING")
 }
 
 fn check_ports(ports: &[u16]) -> bool {
     for &port in ports {
-        println!("Checking port {}", port);
+        // println!("Checking port {}", port);
         if !is_port_occupied(port) {
             return false;
         }
@@ -32,6 +30,7 @@ fn check_ports(ports: &[u16]) -> bool {
 }
 
 fn clear_docker_containers() {
+    // println!("Clearing docker containers...");
     let stop_output = Command::new("docker")
         .arg("stop")
         .arg("$(docker ps -aq)")
@@ -44,17 +43,18 @@ fn clear_docker_containers() {
         .output()
         .expect("Failed to remove Docker containers");
 
-    println!(
-        "Docker stop output: {:?}",
-        String::from_utf8_lossy(&stop_output.stdout)
-    );
-    println!(
-        "Docker remove output: {:?}",
-        String::from_utf8_lossy(&rm_output.stdout)
-    );
+    // println!(
+    //     "Docker stop output: {:?}",
+    //     String::from_utf8_lossy(&stop_output.stdout)
+    // );
+    // println!(
+    //     "Docker remove output: {:?}",
+    //     String::from_utf8_lossy(&rm_output.stdout)
+    // );
 }
 
 fn shutdown_wsl() {
+    // println!("Shutting down wsl...");
     Command::new("wsl.exe")
         .arg("--terminate")
         .arg(WSL_INSTANCE_NAME)
@@ -67,9 +67,9 @@ fn main() {
 
     loop {
         if check_ports(&ports_to_check) {
-            println!("All ports are occupied. Continuing...");
+            // println!("All ports are occupied. Continuing...");
         } else {
-            println!("One or more ports are not occupied. Clearing Docker containers and shutting down...");
+            // println!("One or more ports are not occupied. Clearing Docker containers and shutting down...");
             clear_docker_containers();
             shutdown_wsl();
             break;
